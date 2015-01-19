@@ -1,0 +1,130 @@
+Highlights in implementations
+----------------------------
+- Well structured Object oriented API implementations and structured
+- Implemented using Java Best practices i.e. usages of Enum and inner classes.
+- Full proof solution, I created regression test set to cross validated all Generated numbers from 1 -3999 for Roman and Word converters.
+- API extended for series conversion in addition with single number conversion
+- Resource Bundle to use all messages from resource files and not from hard coding
+- All constants configurable in properties files
+- Java inbuilt logger with customised formatter for one line console printing.
+- Well covered Junit test cases and test suites
+- Maven build and Test case integration using POM
+- Well documented API, Logic and examples given in implementations
+
+Requirement Analysis
+--------------------
+Valid limit 1-3999 only
+Roman conversions
+
+Number should comes at-most 3 times. i.e. III is valid and IIII is not valid
+- Basic Units 
+I can be placed before V and X to make 4 units (IV) and 9 units (IX) respectively
+X can be placed before L and C to make 40 (XL) and 90 (XC) respectively
+C can be placed before D and M to make 400 (CD) and 900 (CM) respectively
+
+Word conversion
+Valid limit 1-3999 only
+-The words for 1, 2, 3, 4, 5, 6, 7, 8, 9 and 10 are: one, two, three, four, five, six, seven, eight, nine, ten 
+-The words for 11, 12, 13, 14, 15, 16, 17, 18, 19 and 20 are: eleven, twelve, thirteen, fourteen, fifteen, sixteen, seventeen, eighteen, nineteen and twenty. 
+-After twenty, there is a pattern to the words.  The tens place uses the words twenty, thirty, forty, fifty, sixty, seventy, eighty and ninety for 20, 30, 40, 50, 60, 70, 80 and 90. 
+
+Design Steps
+------------------
+- Understanding of conversion logic of dividend by a basic units and its reminder and quotients
+- Understanding of Decimal to Binary and Hex conversions.
+- Created basic algorithm for number conversion
+  Step1 Divide number by greatest divisor of basic unit
+  Step2 Convert quotient to its new number system digits 
+  Step3 Apply additional logic for divisor (If required)
+  Step4 GO to Step-1 to Process Reminder  
+ 
+- Created prototype converter for Roman conversion with minimal conversion up to 5
+- Changed logic for Recursive calls to adjust reminder and quotient
+ 
+
+Implementations - Roman Converter
+--------------------------------------
+AT this stage Roman Converter was in partial working condition in raw implementation form
+		
+1. Challenge: Stuck on calculation for number 4 while 1,2,3,5,6,7,8 all were fine. 
+Solution: Added additional check not to use more than 3 Consecutive chars. i.e. 4 cannot be build with IIII
+
+2. Challenge: Failing on zero as it has different behaviour when called intermediately and when directly
+Solution: Used one space when returned directly and no space when returned intermediately. 
+
+3. Challenge: If nothing is matching then (i.e. ignore in previous step) then to go back to higher. 
+Solution: Created Object to keep track of previous and next divisor and to apply logic of prefix if have to GO BACK
+  IF moved back to Old Unit then PREFIX ELSE SUFFIX
+  
+4.Challenge:  Conversion of 9 as above logic was not applying on that
+Solution:  In place of additional checks and conditions added additional chars as basic units as per requirement document
+   IV, IX, XL, XC etc...
+
+5. Challenge:  Additional White space at the end of converted number that was failing test cases. 
+Solution:  Added new Contract for Post Processing once all the intermediately calculations was done.
+  
+6. Challenge:  To validate if all generated numbers are ok or not
+Solution: Downloaded ROMAN chart from website and converted in to property file. Then validated all Keys and values with program generated output 
+
+7. Challenge: To restructure the implementation as Generic Basic Converter implementation
+Solution: Code restructuring as per OOPS standards and to put most of the generic flow in Base Converter.
+
+
+Implementation - WORD CONVERTER
+-------------------------------
+Up to now Roman Converter was fully functional and tested. 
+1. Restructuring of API to adjust WORD converter.
+Solution: Redesigned code for more generic and abstract methods and created new implementation for WORD Converter.
+
+2. Challenge: Due to Reminder division with 10, Representation of quotient was wrong in 2 digits units from 21 to 99 was incorrect
+i.e. 21 was printing two ten one due to Num=21 Quotient=2, Divisor=10 Reminder. 
+Then it was selecting level "two" for Quotient=2
+Solution: In concrete Converter re-structured the number back after using its reminder (mod division) 
+Quotient = quotient * divisor;	
+i.e. 21 became Quotient=20 Divisor=10 Reminder 1 and then it can pick corresponding "Twenty" level
+
+3. Challenge: "ten" was incorrectly printing for 2 digits units from 21 to 99
+i.e. 21 was printing twenty ten one
+Solution: Removed level of Unit 10 from hash map. Now new pair is key=10;value=""
+
+3. Challenge: Issues with additional space between last 2 units. i.e. 21 was "twenty one"
+Solution: Added trim in Concrete Converter class after quotient/divisor calculations
+
+4.Challenge : "and" was coming as prefix for two digits 21-99 
+i.e. 121 is printing "one hundred and twenty one"
+And 21 is printing "and twenty one"
+Solution: Added separate method for recursive calls for conversion by adding flag if it is direct called number or part of existing expression/number.
+
+5. Challenge: Additionally adding zero at the end for values 100,200,300
+i.e. for 100 it was printing "one hundred zero"
+Solution: Added additional logic for ZERO to be used as " " in place of zero
+
+6. Challenge:  Additional White space at the end of converted number that was failing test cases.(Due to above logic) 
+Solution:  It was implemented for Roman converted and now required in Word converter hence moved to generic logic of BAse Class.
+ 
+
+
+Implementations- NumberPrinter
+---------------------------------
+-	Exposed Converter API over Converter Interface
+-	Added additional support for series conversion
+
+Post Implementations:
+- Minor changes as per coding standard
+- Updated JUNIT to cover all possible case
+- Added Maven Support
+
+
+Task status
+-------------------
+- Add Serial version ID, Author date : Complete
+- Add getter/Setter/ To String HashCode methods : Complete
+- POM Artefacts : Complete
+- Regression Test Cases : Complete
+- Self Code review: Complete 
+- Documentation: Complete
+
+
+
+
+
